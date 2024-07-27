@@ -46,13 +46,26 @@ def create_dataset(
         .reset_index()
         .drop("index", axis=1)
     )
-    data_merged = data_merged
+    # data_merged = data_merged
     selected_col_list = [col + f"-{start_year}" for col in target_feature_list]
+    selected_col_list.append(f"sofifa_id-{start_year}")
     df_X = data_merged[selected_col_list]
     df_X = df_X.drop(columns=f"overall-{start_year}")
     df_Y = data_merged[f"overall-{end_year}"]
     df_X.columns = [col.split("-")[0] for col in df_X.columns]
     return df_X, df_Y
+
+
+def prep_dataset(df_X, df_Y):
+    df_X_train_dropped = df_X.drop(
+        ["goalkeeping_speed", "mentality_composure"], axis=1
+    ).dropna(how="any")
+    df_X_train_dropped_index = df_X_train_dropped.index
+    df_X_train_dropped = df_X_train_dropped.reset_index().drop("index", axis=1)
+    df_Y_train_dropped = (
+        df_Y.iloc[df_X_train_dropped_index].reset_index().drop("index", axis=1)
+    ).squeeze()
+    return df_X_train_dropped, df_Y_train_dropped
 
 
 def create_master_table(csv_files, columns_list):
