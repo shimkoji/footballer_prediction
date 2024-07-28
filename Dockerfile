@@ -1,6 +1,5 @@
 FROM python:3.10.11-slim
 
-
 RUN pip install -U pip
 RUN pip install poetry
 RUN poetry config virtualenvs.create false
